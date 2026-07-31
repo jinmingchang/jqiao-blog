@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { loadArticles, deleteArticle } from '../utils/storage'
 import { getStoredPassword, setStoredPassword } from '../utils/auth'
@@ -7,6 +7,7 @@ import { ElMessageBox, ElMessage } from 'element-plus'
 
 const router = useRouter()
 const articles = ref([])
+const loading = ref(true)
 
 // 密码管理
 const showPwdDialog = ref(false)
@@ -15,10 +16,18 @@ const newPwd = ref('')
 const confirmPwd = ref('')
 const pwdError = ref('')
 
-function refreshData() {
-  articles.value = loadArticles().sort((a, b) => b.id - a.id)
+async function refreshData() {
+  loading.value = true
+  try {
+    articles.value = await loadArticles()
+  } catch (e) {
+    console.error('加载文章列表失败:', e)
+    ElMessage.error('加载文章列表失败')
+  } finally {
+    loading.value = false
+  }
 }
-refreshData()
+onMounted(() => refreshData())
 
 function goToNew() {
   router.push('/admin/new')
@@ -35,7 +44,7 @@ async function handleDelete(id) {
       cancelButtonText: '取消',
       type: 'warning',
     })
-    deleteArticle(id)
+    await deleteArticle(id)
     refreshData()
     ElMessage.success('文章已删除')
   } catch {
@@ -94,6 +103,7 @@ function handleChangePwd() {
       border
       style="width: 100%"
       row-class-name="admin-table-row"
+      v-loading="loading"
     >
       <el-table-column prop="title" label="标题" min-width="200">
         <template #default="{ row }">

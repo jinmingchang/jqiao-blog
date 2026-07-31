@@ -7,10 +7,18 @@ const props = defineProps({ id: { type: [String, Number], required: true } })
 const router = useRouter()
 
 const article = ref(null)
+const loading = ref(true)
 
-onMounted(() => {
-  const found = findArticle(Number(props.id))
-  article.value = found ? found.article : null
+onMounted(async () => {
+  try {
+    const found = await findArticle(props.id)
+    article.value = found ? found.article : null
+  } catch (e) {
+    console.error('加载文章失败:', e)
+    article.value = null
+  } finally {
+    loading.value = false
+  }
 })
 
 function goBack() {
@@ -48,6 +56,10 @@ function goBack() {
     </div>
   </div>
 
+  <!-- 加载中 -->
+  <div v-else-if="loading" class="text-center py-15 text-[#999]">
+    <p class="text-[15px]">加载中...</p>
+  </div>
   <!-- 文章未找到 -->
   <div v-else class="text-center py-15 text-[#999]">
     <p class="text-[15px]">文章未找到</p>

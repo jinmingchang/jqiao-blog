@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import { initSupabase } from '../utils/supabase'
 
 const props = defineProps({
   modelValue: { type: String, default: '' },
@@ -10,6 +11,7 @@ const emit = defineEmits(['update:modelValue'])
 const editorRef = ref(null)
 const headingSelect = ref('<p>')
 const imageInputRef = ref(null)
+const imageUploading = ref(false)
 
 function syncToModel() {
   if (editorRef.value) {
@@ -41,8 +43,29 @@ function triggerImageUpload() {
   imageInputRef.value?.click()
 }
 
-// 处理图片选择
-function handleImageSelect(e) {
+// 上传图片到 Supabase Storage，返回公开 URL
+async function uploadImage(file) {
+  const sb = initSupabase()
+  if (!sb) {
+    // 未配置 Supabase，回退到 base64
+    return new Promise((resolve) => {
+      const reader = new FileReader()
+      reader.onload = (ev) => resolve(ev.target.result)
+      reader.readAsDataURL(file)
+    })
+  }
+  const ext = file.name.split('.').pop() || 'png'
+  const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+  const { data, error } = await sb.storage
+    .from('blog-images')
+    .upload(path, file, { cacheControl: '3600', upsert: false })
+  if (error) throw error
+  const { data: urlData } = sb.storage.from('blog-images').getPublicUrl(path)
+  return urlData.publicUrl
+}
+
+// 处理图片选择 - 上传到 Supabase
+async function handleImageSelect(e) {
   const file = e.target.files?.[0]
   if (!file) return
 
@@ -59,20 +82,26 @@ function handleImageSelect(e) {
     return
   }
 
-  const reader = new FileReader()
-  reader.onload = (ev) => {
+  imageUploading.value = true
+  try {
+    const url = await uploadImage(file)
     editorRef.value?.focus()
-    document.execCommand('insertImage', false, ev.target.result)
+    document.execCommand('insertImage', false, url)
     syncToModel()
+    ElMessage.success('图片上传成功')
+  } catch (err) {
+    console.error('图片上传失败:', err)
+    ElMessage.error('图片上传失败')
+  } finally {
+    imageUploading.value = false
   }
-  reader.readAsDataURL(file)
 
   // 重置 input 以便重复选择同一文件
   e.target.value = ''
 }
 
-// 粘贴图片处理
-function onPaste(e) {
+// 粘贴图片处理 - 上传到 Supabase
+async function onPaste(e) {
   const items = e.clipboardData?.items
   const imageItem = items && Array.from(items).find(item => item.type.startsWith('image/'))
 
@@ -83,13 +112,20 @@ function onPaste(e) {
       ElMessage.warning('图片大小不能超过 5MB')
       return
     }
-    const reader = new FileReader()
-    reader.onload = (ev) => {
+
+    imageUploading.value = true
+    try {
+      const url = await uploadImage(file)
       editorRef.value?.focus()
-      document.execCommand('insertImage', false, ev.target.result)
+      document.execCommand('insertImage', false, url)
       syncToModel()
+      ElMessage.success('图片粘贴上传成功')
+    } catch (err) {
+      console.error('图片粘贴上传失败:', err)
+      ElMessage.error('图片上传失败')
+    } finally {
+      imageUploading.value = false
     }
-    reader.readAsDataURL(file)
   } else {
     e.preventDefault()
     const text = (e.clipboardData || window.clipboardData).getData('text/plain')
@@ -228,9 +264,10 @@ watch(
         type="button"
         class="toolbar-btn"
         title="插入图片"
+        :disabled="imageUploading"
         @mousedown.prevent
         @click="triggerImageUpload"
-      >🖼</button>
+      >{{ imageUploading ? '⏳' : '🖼' }}</button>
       <span class="w-px my-1 mx-1 bg-[#eaeaea]"></span>
       <button
         type="button"

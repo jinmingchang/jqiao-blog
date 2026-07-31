@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { loadArticles, getCategories } from '../utils/storage'
 import ArticleCard from '../components/ArticleCard.vue'
@@ -8,16 +8,25 @@ const router = useRouter()
 
 const articles = ref([])
 const categories = ref([])
+const loading = ref(true)
 const activeCategory = ref('')
 const currentPage = ref(1)
 const pageSize = 5
 
 // 初始化数据
-function refreshData() {
-  articles.value = loadArticles().sort((a, b) => b.id - a.id)
-  categories.value = getCategories()
+async function refreshData() {
+  try {
+    const data = await loadArticles()
+    articles.value = data
+    const cats = await getCategories()
+    categories.value = cats
+  } catch (e) {
+    console.error('加载文章失败:', e)
+  } finally {
+    loading.value = false
+  }
 }
-refreshData()
+onMounted(() => refreshData())
 
 const filteredArticles = computed(() => {
   if (!activeCategory.value) return articles.value
@@ -70,8 +79,12 @@ function handlePageChange(page) {
       >{{ cat }}</span>
     </div>
 
+    <!-- 加载中 -->
+    <div v-if="loading" class="text-center py-15 text-[#999]">
+      <p class="text-[15px]">加载中...</p>
+    </div>
     <!-- 文章列表 -->
-    <div v-if="pagedArticles.length" class="flex flex-col gap-4">
+    <div v-else-if="pagedArticles.length" class="flex flex-col gap-4">
       <ArticleCard
         v-for="article in pagedArticles"
         :key="article.id"

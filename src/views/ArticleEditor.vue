@@ -20,23 +20,32 @@ const form = reactive({
   content: '',
 })
 
-onMounted(() => {
+const loading = ref(false)
+
+onMounted(async () => {
   if (props.id) {
-    const found = findArticle(Number(props.id))
-    if (found) {
-      const a = found.article
-      form.id = a.id
-      form.title = a.title
-      form.date = a.date
-      form.category = a.category
-      form.tags = a.tags.join(', ')
-      form.excerpt = a.excerpt
-      form.content = a.content
+    loading.value = true
+    try {
+      const found = await findArticle(props.id)
+      if (found) {
+        const a = found.article
+        form.id = a.id
+        form.title = a.title
+        form.date = a.date
+        form.category = a.category
+        form.tags = a.tags.join(', ')
+        form.excerpt = a.excerpt
+        form.content = a.content
+      }
+    } catch (e) {
+      ElMessage.error('加载文章失败')
+    } finally {
+      loading.value = false
     }
   }
 })
 
-function handleSubmit() {
+async function handleSubmit() {
   if (!form.title.trim()) {
     ElMessage.warning('请输入标题')
     return
@@ -57,14 +66,18 @@ function handleSubmit() {
     content: form.content || '',
   }
 
-  if (isEdit.value) {
-    updateArticle(Number(props.id), data)
-    ElMessage.success('文章已更新')
-  } else {
-    addArticle(data)
-    ElMessage.success('文章已发布')
+  try {
+    if (isEdit.value) {
+      await updateArticle(props.id, data)
+      ElMessage.success('文章已更新')
+    } else {
+      await addArticle(data)
+      ElMessage.success('文章已发布')
+    }
+    router.push('/admin')
+  } catch (e) {
+    ElMessage.error('保存失败，请重试')
   }
-  router.push('/admin')
 }
 
 function handleCancel() {

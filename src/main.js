@@ -6,6 +6,10 @@ import '@unocss/reset/tailwind-compat.css'
 import 'virtual:uno.css'
 import App from './App.vue'
 import router from './router'
+import { initSupabase } from './utils/supabase'
+
+// 初始化 Supabase（如果已配置）
+initSupabase()
 
 const app = createApp(App)
 app.use(ElementPlus, { locale: zhCn })
