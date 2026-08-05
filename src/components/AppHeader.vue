@@ -8,6 +8,7 @@ const route = useRoute()
 
 const baseNavItems = [
   { path: '/', label: '文章', segment: '' },
+  { path: '/moments', label: '朋友圈', segment: 'moments' },
   { path: '/about', label: '关于我', segment: 'about' },
 ]
 
@@ -19,6 +20,7 @@ const navItems = computed(() => {
 
 const activeSegment = computed(() => {
   if (route.path.startsWith('/admin')) return 'admin'
+  if (route.path.startsWith('/moments')) return 'moments'
   if (route.path === '/about') return 'about'
   return ''
 })
