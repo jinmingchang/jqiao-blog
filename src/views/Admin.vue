@@ -91,6 +91,7 @@ function handleChangePwd() {
       <h1 class="text-[28px] font-bold tracking-tight">文章管理</h1>
       <div class="flex gap-2">
         <el-button @click="openPwdDialog">修改密码</el-button>
+        <el-button @click="router.push('/admin/friends')">朋友管理</el-button>
         <el-button type="primary" @click="goToNew">+ 写新文章</el-button>
       </div>
     </div>

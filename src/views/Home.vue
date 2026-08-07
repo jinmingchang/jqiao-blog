@@ -58,9 +58,17 @@ function handlePageChange(page) {
 <template>
   <div>
     <!-- 列表头部 -->
-    <div class="mb-8">
-      <h1 class="text-[28px] font-bold tracking-tight mb-2">文章</h1>
-      <p class="text-[#6b6b6b] text-[15px]">共 {{ articles.length }} 篇文章</p>
+    <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
+      <div>
+        <h1 class="text-[28px] font-bold tracking-tight mb-2">文章</h1>
+        <p class="text-[#6b6b6b] text-[15px]">共 {{ articles.length }} 篇文章</p>
+      </div>
+      <router-link
+        to="/moments"
+        class="inline-flex items-center gap-1 px-4 py-2 rounded-full border border-[#4a90d9] text-[#4a90d9] text-[14px] font-medium no-underline transition hover:bg-[#4a90d9] hover:text-white"
+      >
+        🌐 朋友圈
+      </router-link>
     </div>
 
     <!-- 分类筛选 -->
