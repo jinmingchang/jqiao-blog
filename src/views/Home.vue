@@ -11,7 +11,7 @@ const categories = ref([])
 const loading = ref(true)
 const activeCategory = ref('')
 const currentPage = ref(1)
-const pageSize = 5
+const pageSize = 10
 
 // 初始化数据
 async function refreshData() {
