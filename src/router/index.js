@@ -6,8 +6,6 @@ import About from '../views/About.vue'
 import Admin from '../views/Admin.vue'
 import ArticleDetail from '../views/ArticleDetail.vue'
 import ArticleEditor from '../views/ArticleEditor.vue'
-import Moments from '../views/Moments.vue'
-import Friends from '../views/Friends.vue'
 
 const NotFound = {
   render() {
@@ -29,8 +27,6 @@ const routes = [
   { path: '/admin/new', name: 'ArticleNew', component: ArticleEditor, meta: { requiresAuth: true } },
   { path: '/admin/edit/:id', name: 'ArticleEdit', component: ArticleEditor, props: true, meta: { requiresAuth: true } },
   { path: '/article/:id', name: 'ArticleDetail', component: ArticleDetail, props: true },
-  { path: '/moments', name: 'Moments', component: Moments },
-  { path: '/admin/friends', name: 'Friends', component: Friends, meta: { requiresAuth: true } },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
 ]
 
