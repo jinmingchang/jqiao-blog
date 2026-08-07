@@ -182,9 +182,10 @@ watch(
 </script>
 
 <template>
-  <div class="border border-[#eaeaea] rounded-md overflow-hidden">
+  <div class="glass rounded-lg overflow-hidden">
     <!-- 工具栏 -->
-    <div class="flex flex-wrap gap-0.5 px-2 py-1.5 bg-[#fafbfc] border-b border-[#eaeaea] select-none">
+    <div class="flex flex-wrap gap-0.5 px-2 py-1.5 border-b select-none"
+      style="background: rgba(255,255,255,0.4); border-color: rgba(255,255,255,0.6);">
       <select
         v-model="headingSelect"
         class="h-8 px-1.5 text-[13px] text-[#6b6b6b] bg-transparent border border-transparent rounded cursor-pointer outline-none hover:border-[#eaeaea] focus:border-[#4a90d9]"

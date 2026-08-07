@@ -2,9 +2,10 @@
   <div class="about-page">
     <h1 class="text-[28px] font-bold mb-6 tracking-tight">关于我</h1>
 
-    <div class="bg-white border border-[#eaeaea] rounded-lg p-8 shadow-sm">
+    <div class="glass p-8">
       <!-- 头像 -->
-      <div class="w-20 h-20 rounded-full bg-[#f0f4f8] flex items-center justify-center text-4xl mb-5">
+      <div class="w-20 h-20 rounded-full flex items-center justify-center text-4xl mb-5"
+        style="background: rgba(74,144,217,0.14); backdrop-filter: blur(8px); box-shadow: inset 0 1px 1px rgba(255,255,255,0.8);">
         👨‍💻
       </div>
 
@@ -35,16 +36,16 @@
         <a
           href="https://github.com"
           target="_blank"
-          class="text-sm px-4 py-1.5 border border-[#eaeaea] rounded-full text-[#6b6b6b] no-underline transition-all duration-200 hover:border-[#4a90d9] hover:text-[#4a90d9]"
+          class="pill-link text-sm px-4 py-1.5 rounded-full text-[#6b6b6b] no-underline transition-all duration-200"
         >GitHub</a>
         <a
           href="mailto:hello@example.com"
-          class="text-sm px-4 py-1.5 border border-[#eaeaea] rounded-full text-[#6b6b6b] no-underline transition-all duration-200 hover:border-[#4a90d9] hover:text-[#4a90d9]"
+          class="pill-link text-sm px-4 py-1.5 rounded-full text-[#6b6b6b] no-underline transition-all duration-200"
         >Email</a>
         <a
           href="#"
           target="_blank"
-          class="text-sm px-4 py-1.5 border border-[#eaeaea] rounded-full text-[#6b6b6b] no-underline transition-all duration-200 hover:border-[#4a90d9] hover:text-[#4a90d9]"
+          class="pill-link text-sm px-4 py-1.5 rounded-full text-[#6b6b6b] no-underline transition-all duration-200"
         >Twitter</a>
       </div>
     </div>

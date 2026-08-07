@@ -160,8 +160,12 @@ function handleChangePwd() {
   display: inline-block;
   padding: 2px 10px;
   border-radius: 12px;
-  background: #f0f4f8;
-  color: #5a7a9a;
+  background: rgba(255,255,255,0.6);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.6);
+  color: #4a90de;
   font-size: 12px;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.8);
 }
 </style>

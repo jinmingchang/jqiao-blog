@@ -1,11 +1,41 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import AppHeader from './components/AppHeader.vue'
 import AppFooter from './components/AppFooter.vue'
 import { authState, login } from './utils/auth.js'
 
 const router = useRouter()
+
+// ===== 主题（明亮 / 暗黑）=====
+const theme = ref('light')
+function applyTheme(t) {
+  theme.value = t
+  document.documentElement.dataset.theme = t
+  try {
+    localStorage.setItem('jqiao-theme', t)
+  } catch (e) {
+    /* 忽略隐私模式下的存储异常 */
+  }
+}
+function toggleTheme() {
+  applyTheme(theme.value === 'dark' ? 'light' : 'dark')
+}
+onMounted(() => {
+  let saved = null
+  try {
+    saved = localStorage.getItem('jqiao-theme')
+  } catch (e) {
+    /* ignore */
+  }
+  if (!saved) {
+    saved = window.matchMedia &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light'
+  }
+  applyTheme(saved)
+})
 
 // 密码输入
 const password = ref('')
@@ -48,16 +78,16 @@ function handleClose() {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col bg-[#fdfdfd] text-[#2c2c2c] leading-relaxed antialiased">
-    <AppHeader />
-    <main class="flex-1 max-w-[720px] mx-auto px-5 py-10 pb-20 w-full">
+  <div class="min-h-screen flex flex-col text-[var(--text)] leading-relaxed antialiased relative">
+    <AppHeader class="relative z-10" :theme="theme" @toggle-theme="toggleTheme" />
+    <main class="flex-1 max-w-[720px] mx-auto px-5 py-10 pb-20 w-full relative z-10">
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in">
           <component :is="Component" />
         </transition>
       </router-view>
     </main>
-    <AppFooter />
+    <AppFooter class="relative z-10" />
 
     <!-- 管理后台登录弹窗 -->
     <el-dialog
@@ -90,10 +120,6 @@ function handleClose() {
 </template>
 
 <style>
-:root {
-  --el-color-primary: #4a90d9;
-}
-
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease, transform 0.3s ease;

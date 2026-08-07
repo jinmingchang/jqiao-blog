@@ -18,7 +18,8 @@
       <li
         v-for="f in friends"
         :key="f.id"
-        class="border border-[#ececec] rounded-xl px-5 py-4 flex items-center justify-between bg-white"
+        class="friend-item rounded-xl px-5 py-4 flex items-center justify-between"
+        style="border: 1px solid rgba(255,255,255,0.7); box-shadow: 0 8px 32px rgba(31,38,135,0.1), inset 0 1px 1px rgba(255,255,255,0.85);"
       >
         <div class="min-w-0">
           <div class="text-[17px] font-medium text-[#1a1a1a]">{{ f.name || '未命名博主' }}</div>

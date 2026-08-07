@@ -15,7 +15,8 @@
       <li
         v-for="f in friends"
         :key="f.id"
-        class="group border border-[#ececec] rounded-xl px-5 py-4 flex items-center justify-between bg-white transition hover:border-[#4a90d9] hover:shadow-sm"
+        class="friend-item group rounded-xl px-5 py-4 flex items-center justify-between transition hover:border-[#4a90d9] hover:shadow-sm"
+        style="border: 1px solid rgba(255,255,255,0.7); box-shadow: 0 8px 32px rgba(31,38,135,0.1), inset 0 1px 1px rgba(255,255,255,0.85);"
       >
         <div class="min-w-0">
           <a

@@ -3,7 +3,7 @@ import { initSupabase } from './supabase'
 // ============================================
 // Supabase 文章数据存储
 // 表名：articles
-// 字段：title, date, category, tags(text[]), excerpt, content
+// 字段：title, date, category, tags(text[]), excerpt, content, audio_url
 // ============================================
 
 function getSB() {
@@ -14,14 +14,20 @@ function getSB() {
 
 /** 将数据库行转为文章数据结构 */
 function mapArticle(row) {
+  // 确保每篇文章都带有 music 标签（客户端兜底，无需改数据库）
+  let tags = Array.isArray(row.tags) ? [...row.tags] : []
+  if (!tags.map((t) => String(t).toLowerCase()).includes('music')) {
+    tags.push('music')
+  }
   return {
     id: row.id,
     title: row.title || '',
     date: row.date || '',
     category: row.category || '未分类',
-    tags: row.tags || [],
+    tags,
     excerpt: row.excerpt || '',
     content: row.content || '',
+    audioUrl: row.audio_url || '',
     createdAt: row.created_at,
   }
 }
@@ -61,6 +67,7 @@ export async function addArticle(data) {
       tags: data.tags || [],
       excerpt: data.excerpt || '',
       content: data.content || '',
+      audio_url: data.audioUrl || '',
     })
     .select()
     .single()
@@ -80,6 +87,7 @@ export async function updateArticle(id, data) {
       tags: data.tags || [],
       excerpt: data.excerpt || '',
       content: data.content || '',
+      audio_url: data.audioUrl || '',
     })
     .eq('id', id)
     .select()

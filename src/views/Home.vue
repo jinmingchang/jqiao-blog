@@ -61,11 +61,11 @@ function handlePageChange(page) {
     <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
       <div>
         <h1 class="text-[28px] font-bold tracking-tight mb-2">文章</h1>
-        <p class="text-[#6b6b6b] text-[15px]">共 {{ articles.length }} 篇文章</p>
+        <p class="text-[var(--text-soft)] text-[15px]">共 {{ articles.length }} 篇文章</p>
       </div>
       <router-link
         to="/moments"
-        class="inline-flex items-center gap-1 px-4 py-2 rounded-full border border-[#4a90d9] text-[#4a90d9] text-[14px] font-medium no-underline transition hover:bg-[#4a90d9] hover:text-white"
+        class="pill-link inline-flex items-center gap-1 px-4 py-2 rounded-full text-[var(--accent)] text-[14px] font-medium no-underline transition hover:bg-[var(--accent)] hover:text-white"
       >
         🌐 朋友圈
       </router-link>
@@ -88,7 +88,7 @@ function handlePageChange(page) {
     </div>
 
     <!-- 加载中 -->
-    <div v-if="loading" class="text-center py-15 text-[#999]">
+    <div v-if="loading" class="text-center py-15 text-[var(--text-faint)]">
       <p class="text-[15px]">加载中...</p>
     </div>
     <!-- 文章列表 -->
@@ -100,7 +100,7 @@ function handlePageChange(page) {
         @click="goToDetail(article.id)"
       />
     </div>
-    <div v-else class="text-center py-15 text-[#999]">
+    <div v-else class="text-center py-15 text-[var(--text-faint)]">
       <div class="text-5xl mb-3">📭</div>
       <p class="text-[15px]">该分类下暂无文章</p>
     </div>
@@ -126,19 +126,23 @@ function handlePageChange(page) {
   border-radius: 20px;
   font-size: 13px;
   cursor: pointer;
-  border: 1px solid #eaeaea;
-  background: #fff;
-  color: #6b6b6b;
-  transition: all 0.2s;
+  border: 1px solid var(--glass-border, rgba(255,255,255,0.7));
+  background: var(--glass-bg-strong);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--glass-highlight);
+  color: var(--text-soft);
+  transition: all 0.25s ease;
   user-select: none;
 }
 .category-tag:hover {
-  border-color: #4a90d9;
-  color: #4a90d9;
+  border-color: var(--accent);
+  color: var(--accent);
 }
 .category-tag.active {
-  background: #4a90d9;
+  background: linear-gradient(135deg, #5b9be0, #4a90d9);
   color: #fff;
-  border-color: #4a90d9;
+  border-color: rgba(255,255,255,0.5);
+  box-shadow: 0 6px 18px rgba(74,144,217,0.35), inset 0 1px 1px rgba(255,255,255,0.6);
 }
 </style>
