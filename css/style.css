@@ -200,6 +200,42 @@ body {
   --el-color-danger: #e5604d;
   --el-border-radius-base: 14px;
   --el-font-family: inherit;
+
+  /* Element Plus 基础变量（亮色默认） */
+  --el-bg-color: #ffffff;
+  --el-bg-color-page: #ffffff;
+  --el-bg-color-overlay: #ffffff;
+  --el-fill-color-blank: #ffffff;
+  --el-fill-color-light: #f5f7fa;
+  --el-fill-color-lighter: #fafafa;
+  --el-text-color-primary: #303133;
+  --el-text-color-regular: #606266;
+  --el-text-color-secondary: #909399;
+  --el-text-color-placeholder: #a8abb2;
+  --el-border-color: #dcdfe6;
+  --el-border-color-light: #e4e7ed;
+  --el-border-color-lighter: #ebeef5;
+  --el-border-color-hover: #c0c4cc;
+  --el-mask-color: rgba(255, 255, 255, 0.9);
+}
+
+/* 暗黑模式：覆盖 Element Plus 核心变量，所有组件（含下拉框）自动变暗 */
+[data-theme='dark'] {
+  --el-bg-color: #1b1b1f;
+  --el-bg-color-page: #1b1b1f;
+  --el-bg-color-overlay: #1b1b1f;
+  --el-fill-color-blank: #252529;
+  --el-fill-color-light: #2a2a30;
+  --el-fill-color-lighter: #252529;
+  --el-text-color-primary: rgba(255, 255, 255, 0.87);
+  --el-text-color-regular: rgba(255, 255, 255, 0.87);
+  --el-text-color-secondary: rgba(235, 235, 235, 0.6);
+  --el-text-color-placeholder: rgba(235, 235, 235, 0.38);
+  --el-border-color: rgba(82, 82, 89, 0.5);
+  --el-border-color-light: rgba(82, 82, 89, 0.5);
+  --el-border-color-lighter: rgba(82, 82, 89, 0.32);
+  --el-border-color-hover: #42b983;
+  --el-mask-color: rgba(27, 27, 31, 0.9);
 }
 
 /* 按钮 */
@@ -251,12 +287,13 @@ body {
   -webkit-backdrop-filter: blur(12px) !important;
   backdrop-filter: blur(12px) !important;
   border-radius: 13px !important;
-  box-shadow: var(--glass-highlight), 0 0 0 1px var(--glass-border-soft) inset !important;
-  border: none !important;
+  border: 1px solid var(--el-border-color) !important;
+  box-shadow: var(--glass-highlight) !important;
 }
 
 .el-input__wrapper.is-focus,
 .el-textarea__inner:focus {
+  border-color: var(--accent) !important;
   box-shadow: var(--glass-highlight), 0 0 0 1px var(--accent) inset !important;
 }
 
@@ -301,17 +338,195 @@ body {
   color: var(--text-soft);
 }
 
+/* 单元格：跟随玻璃系统，而非固定白底 */
 .el-table td.el-table__cell {
-  background: rgba(255, 255, 255, 0.28) !important;
+  background: var(--glass-bg) !important;
   color: var(--text);
 }
 
 .el-table--striped .el-table__row--striped td.el-table__cell {
-  background: rgba(255, 255, 255, 0.16) !important;
+  background: var(--glass-bg-strong) !important;
+}
+
+/* 隔行再压暗一点，增强可读性（仅亮色模式） */
+.el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
+  filter: brightness(0.97);
 }
 
 .el-table .el-table__cell {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.4) !important;
+  border-bottom: 1px solid var(--glass-border) !important;
+}
+
+/* 暗黑模式：Vue 官网（VitePress）风格 —— 纯深底 + 细线 + 品牌绿 */
+[data-theme='dark'] .el-table {
+  background: #1b1b1f !important;
+  border: 1px solid rgba(82, 82, 89, 0.5);
+  border-radius: 0;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+[data-theme='dark'] .el-table th.el-table__cell {
+  background: #161618 !important;
+  color: rgba(235, 235, 235, 0.6);
+  font-weight: 600;
+  border-bottom: 1px solid rgba(82, 82, 89, 0.5) !important;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+[data-theme='dark'] .el-table td.el-table__cell {
+  background: #1b1b1f !important;
+  color: rgba(255, 255, 255, 0.87);
+  border-bottom: 1px solid rgba(82, 82, 89, 0.32) !important;
+}
+
+[data-theme='dark'] .el-table--striped .el-table__row--striped td.el-table__cell {
+  background: #161618 !important;
+  filter: none;
+}
+
+[data-theme='dark'] .el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell {
+  background: #2a2a30 !important;
+}
+
+/* 滚动条、空状态 */
+[data-theme='dark'] .el-table__empty-text {
+  color: rgba(235, 235, 235, 0.5);
+}
+
+[data-theme='dark'] .el-table__body-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(82, 82, 89, 0.6);
+  border-radius: 4px;
+}
+
+/* 暗黑模式：Element Plus 表单组件 —— VitePress 风格 */
+[data-theme='dark'] .el-input__wrapper,
+[data-theme='dark'] .el-textarea__inner,
+[data-theme='dark'] .el-date-editor .el-input__wrapper {
+  background-color: #252529;
+  border: 1px solid rgba(82, 82, 89, 0.5);
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+[data-theme='dark'] .el-input__wrapper.is-focus,
+[data-theme='dark'] .el-textarea__inner:focus,
+[data-theme='dark'] .el-date-editor.is-active .el-input__wrapper {
+  border-color: #42b983;
+}
+
+[data-theme='dark'] .el-input__inner,
+[data-theme='dark'] .el-textarea__inner {
+  color: rgba(255, 255, 255, 0.87);
+}
+
+[data-theme='dark'] .el-input__inner::placeholder,
+[data-theme='dark'] .el-textarea__inner::placeholder {
+  color: rgba(235, 235, 235, 0.38);
+}
+
+/* 字数统计：所有层级强制深底 */
+[data-theme='dark'] .el-input__count,
+[data-theme='dark'] .el-input .el-input__count,
+[data-theme='dark'] .el-input__count-inner {
+  background: #252529 !important;
+  color: rgba(235, 235, 235, 0.5) !important;
+}
+
+/* 选择器：触发框普通状态、hover、focus 都强制深底 */
+[data-theme='dark'] .el-select .el-input__wrapper,
+[data-theme='dark'] .el-select .select-trigger .el-input__wrapper,
+[data-theme='dark'] .el-select:hover .el-input__wrapper,
+[data-theme='dark'] .el-select .el-input.is-focus .el-input__wrapper,
+[data-theme='dark'] .el-select .el-input__wrapper.is-focus {
+  background-color: #252529 !important;
+  border: 1px solid rgba(82, 82, 89, 0.5) !important;
+  box-shadow: none !important;
+}
+
+[data-theme='dark'] .el-select:hover .el-input__wrapper,
+[data-theme='dark'] .el-select .el-input.is-focus .el-input__wrapper,
+[data-theme='dark'] .el-select .el-input__wrapper.is-focus {
+  border-color: #42b983 !important;
+}
+
+[data-theme='dark'] .el-select .el-input__inner {
+  color: rgba(255, 255, 255, 0.87);
+}
+
+[data-theme='dark'] .el-select .el-input__inner::placeholder {
+  color: rgba(235, 235, 235, 0.38);
+}
+
+/* 选择器：下拉面板与选项（强覆盖，确保暗黑生效） */
+[data-theme='dark'] .el-popper.el-select__popper,
+[data-theme='dark'] .el-popper.el-select__popper.el-popper.is-light,
+[data-theme='dark'] .el-popper.el-select__popper .el-popper__arrow,
+[data-theme='dark'] .el-popper.el-select__popper .el-popper__arrow::before {
+  background: #1b1b1f !important;
+  border: 1px solid rgba(82, 82, 89, 0.5) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+  color: rgba(255, 255, 255, 0.87) !important;
+}
+
+[data-theme='dark'] .el-select-dropdown,
+[data-theme='dark'] .el-select-dropdown__list,
+[data-theme='dark'] .el-select-dropdown__wrap,
+[data-theme='dark'] .el-scrollbar,
+[data-theme='dark'] .el-scrollbar__view,
+[data-theme='dark'] .el-select-dropdown__empty,
+[data-theme='dark'] .el-select-dropdown__loading {
+  background-color: #1b1b1f !important;
+}
+
+[data-theme='dark'] .el-scrollbar__bar.is-vertical > div,
+[data-theme='dark'] .el-scrollbar__bar.is-horizontal > div {
+  background: rgba(82, 82, 89, 0.6) !important;
+}
+
+[data-theme='dark'] .el-select-dropdown__item {
+  color: rgba(255, 255, 255, 0.87) !important;
+}
+
+[data-theme='dark'] .el-select-dropdown__item.hover,
+[data-theme='dark'] .el-select-dropdown__item:hover {
+  background: rgba(66, 185, 131, 0.12) !important;
+}
+
+[data-theme='dark'] .el-select-dropdown__item.selected {
+  color: #42b983 !important;
+  font-weight: 600;
+}
+
+[data-theme='dark'] .el-select .el-tag {
+  background: rgba(66, 185, 131, 0.14) !important;
+  border-color: rgba(66, 185, 131, 0.35) !important;
+  color: #42b983 !important;
+}
+
+/* 开关 */
+[data-theme='dark'] .el-switch__label {
+  color: rgba(235, 235, 235, 0.5);
+}
+
+[data-theme='dark'] .el-switch__label.is-active {
+  color: #42b983;
+}
+
+[data-theme='dark'] .el-switch__core {
+  background: rgba(82, 82, 89, 0.5);
+}
+
+[data-theme='dark'] .el-switch.is-checked .el-switch__core {
+  background: #42b983;
+}
+
+[data-theme='dark'] .el-table__body-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
 }
 
 /* 分页 */

@@ -1,7 +1,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { findArticle, addArticle, updateArticle, todayStr } from '../utils/storage'
+import { findArticle, addArticle, updateArticle, todayStr, loadCategories, addCategory } from '../utils/storage'
 import { ElMessage } from 'element-plus'
 import RichTextEditor from '../components/RichTextEditor.vue'
 
@@ -19,11 +19,20 @@ const form = reactive({
   excerpt: '',
   content: '',
   audioUrl: '',
+  hidden: false,
 })
 
 const loading = ref(false)
+// 分类字典
+const categories = ref([])
 
 onMounted(async () => {
+  // 加载分类字典
+  try {
+    categories.value = await loadCategories()
+  } catch (e) {
+    console.error('加载分类失败:', e)
+  }
   if (props.id) {
     loading.value = true
     try {
@@ -38,6 +47,7 @@ onMounted(async () => {
         form.excerpt = a.excerpt
         form.content = a.content
         form.audioUrl = a.audioUrl || ''
+        form.hidden = !!a.hidden
       }
     } catch (e) {
       ElMessage.error('加载文章失败')
@@ -52,24 +62,30 @@ async function handleSubmit() {
     ElMessage.warning('请输入标题')
     return
   }
-  if (!form.category.trim()) {
-    ElMessage.warning('请输入分类')
+  if (!form.category) {
+    ElMessage.warning('请选择分类')
     return
   }
 
   const data = {
     title: form.title.trim(),
     date: form.date || todayStr(),
-    category: form.category.trim() || '未分类',
+    category: form.category,
     tags: form.tags.trim()
       ? form.tags.split(',').map((t) => t.trim()).filter(Boolean)
       : [],
     excerpt: form.excerpt.trim(),
     content: form.content || '',
     audioUrl: form.audioUrl.trim(),
+    hidden: form.hidden,
   }
 
   try {
+    // 若分类尚未在字典中，先写入字典（保持字典统一）
+    if (!categories.value.some((c) => c.name === data.category)) {
+      await addCategory(data.category)
+      categories.value = await loadCategories()
+    }
     if (isEdit.value) {
       await updateArticle(props.id, data)
       ElMessage.success('文章已更新')
@@ -93,7 +109,7 @@ function handleCancel() {
     <!-- 返回链接 -->
     <a
       href="#/admin"
-      class="inline-flex items-center gap-1 text-sm text-[#6b6b6b] no-underline mb-6 transition-colors duration-200 hover:text-[#4a90d9]"
+      class="editor-back-link inline-flex items-center gap-1 text-sm no-underline mb-6 transition-colors duration-200"
       @click.prevent="handleCancel"
     >← 返回管理</a>
 
@@ -119,7 +135,21 @@ function handleCancel() {
           />
         </el-form-item>
         <el-form-item label="分类" required class="flex-1">
-          <el-input v-model="form.category" placeholder="如：前端开发" maxlength="20" />
+          <el-select
+            v-model="form.category"
+            placeholder="请选择分类"
+            filterable
+            allow-create
+            default-first-option
+            style="width: 100%"
+          >
+            <el-option
+              v-for="cat in categories"
+              :key="cat.id"
+              :label="cat.name"
+              :value="cat.name"
+            />
+          </el-select>
         </el-form-item>
       </div>
 
@@ -133,7 +163,7 @@ function handleCancel() {
           placeholder="可嵌入的播放器链接，如 https://player.bilibili.com/player.html?bvid=BV1xx... 或 https://www.youtube.com/embed/xxxx"
           maxlength="500"
         />
-        <p class="text-[12px] text-[#999] mt-1 mb-0">
+        <p class="editor-hint text-[12px] mt-1 mb-0">
           留空则不显示播放按钮。建议使用平台提供的「嵌入/iframe」链接，普通视频页链接可能无法直接播放。
         </p>
       </el-form-item>
@@ -147,6 +177,18 @@ function handleCancel() {
           maxlength="300"
           show-word-limit
         />
+      </el-form-item>
+
+      <el-form-item label="可见性">
+        <el-switch
+          v-model="form.hidden"
+          active-text="隐藏"
+          inactive-text="公开"
+          inline-prompt
+        />
+        <p class="editor-hint text-[12px] mt-1 mb-0">
+          开启后文章不会出现在前台列表中，仅后台可见，可用于草稿或暂存。
+        </p>
       </el-form-item>
 
       <el-form-item label="正文">
@@ -164,9 +206,51 @@ function handleCancel() {
     </el-form>
 
     <!-- 写作提示 -->
-    <div class="glass-sm p-5 mt-4 text-sm text-[#6b6b6b]">
-      <h3 class="font-semibold mb-2 text-[#2c2c2c] text-[15px]">写作提示</h3>
+    <div class="editor-tips glass-sm p-5 mt-4 text-sm">
+      <h3 class="font-semibold mb-2 text-[15px]">写作提示</h3>
       <p>使用上方工具栏编辑文章，支持加粗、斜体、标题、列表、引用、代码块、链接、图片等格式。点击图片选中后按 Delete 可删除，也支持直接粘贴截图。</p>
     </div>
   </div>
 </template>
+
+<style scoped>
+/* 亮色模式 */
+.editor-back-link {
+  color: #6b6b6b;
+}
+.editor-back-link:hover {
+  color: #4a90d9;
+}
+
+.editor-hint {
+  color: #999;
+}
+
+.editor-tips {
+  color: #6b6b6b;
+}
+.editor-tips h3 {
+  color: #2c2c2c;
+}
+
+/* 暗黑模式：VitePress 风格 */
+[data-theme='dark'] .editor-back-link {
+  color: rgba(235, 235, 235, 0.6);
+}
+[data-theme='dark'] .editor-back-link:hover {
+  color: #42b983;
+}
+
+[data-theme='dark'] .editor-hint {
+  color: rgba(235, 235, 235, 0.45);
+}
+
+[data-theme='dark'] .editor-tips {
+  color: rgba(235, 235, 235, 0.6);
+  background: rgba(22, 22, 24, 0.7);
+  border-color: rgba(82, 82, 89, 0.5);
+}
+[data-theme='dark'] .editor-tips h3 {
+  color: rgba(255, 255, 255, 0.87);
+}
+</style>

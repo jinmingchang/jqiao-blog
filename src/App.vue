@@ -57,9 +57,15 @@ async function handleLogin() {
     return
   }
   loginLoading.value = true
-  // 模拟异步以展示加载状态
-  await new Promise(r => setTimeout(r, 300))
-  const ok = login(password.value.trim())
+  let ok = false
+  try {
+    ok = await login(password.value.trim())
+  } catch (e) {
+    console.error('登录校验失败:', e)
+    loginError.value = '校验失败，请检查数据库配置'
+    loginLoading.value = false
+    return
+  }
   loginLoading.value = false
   if (ok) {
     // 登录成功，跳转到待访问的管理页面

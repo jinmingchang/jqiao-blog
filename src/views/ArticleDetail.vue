@@ -27,7 +27,8 @@ onMounted(async () => {
   window.addEventListener('mouseup', onMouseUp)
   try {
     const found = await findArticle(props.id)
-    article.value = found ? found.article : null
+    // 隐藏文章前台不可直链访问
+    article.value = found && !found.article.hidden ? found.article : null
   } catch (e) {
     console.error('加载文章失败:', e)
     article.value = null

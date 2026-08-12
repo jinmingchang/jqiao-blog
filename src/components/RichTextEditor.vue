@@ -184,11 +184,10 @@ watch(
 <template>
   <div class="glass rounded-lg overflow-hidden">
     <!-- 工具栏 -->
-    <div class="flex flex-wrap gap-0.5 px-2 py-1.5 border-b select-none"
-      style="background: rgba(255,255,255,0.4); border-color: rgba(255,255,255,0.6);">
+    <div class="editor-toolbar flex flex-wrap gap-0.5 px-2 py-1.5 border-b select-none">
       <select
         v-model="headingSelect"
-        class="h-8 px-1.5 text-[13px] text-[#6b6b6b] bg-transparent border border-transparent rounded cursor-pointer outline-none hover:border-[#eaeaea] focus:border-[#4a90d9]"
+        class="editor-heading-select h-8 px-1.5 text-[13px] rounded cursor-pointer outline-none"
         @mousedown.stop
         @change="onHeadingChange"
       >
@@ -196,7 +195,7 @@ watch(
         <option value="<h2>">H2</option>
         <option value="<h3>">H3</option>
       </select>
-      <span class="w-px my-1 mx-1 bg-[#eaeaea]"></span>
+      <span class="editor-divider w-px my-1 mx-1"></span>
       <button
         type="button"
         class="toolbar-btn"
@@ -221,7 +220,7 @@ watch(
         @mousedown.prevent
         @click="execCmd('underline')"
       ><u>U</u></button>
-      <span class="w-px my-1 mx-1 bg-[#eaeaea]"></span>
+      <span class="editor-divider w-px my-1 mx-1"></span>
       <button
         type="button"
         class="toolbar-btn"
@@ -238,7 +237,7 @@ watch(
         @mousedown.prevent
         @click="execCmd('insertOrderedList')"
       >1.</button>
-      <span class="w-px my-1 mx-1 bg-[#eaeaea]"></span>
+      <span class="editor-divider w-px my-1 mx-1"></span>
       <button
         type="button"
         class="toolbar-btn"
@@ -253,7 +252,7 @@ watch(
         @mousedown.prevent
         @click="execCmd('formatBlock', '<pre>')"
       >&lt;/&gt;</button>
-      <span class="w-px my-1 mx-1 bg-[#eaeaea]"></span>
+      <span class="editor-divider w-px my-1 mx-1"></span>
       <button
         type="button"
         class="toolbar-btn"
@@ -269,7 +268,7 @@ watch(
         @mousedown.prevent
         @click="triggerImageUpload"
       >{{ imageUploading ? '⏳' : '🖼' }}</button>
-      <span class="w-px my-1 mx-1 bg-[#eaeaea]"></span>
+      <span class="editor-divider w-px my-1 mx-1"></span>
       <button
         type="button"
         class="toolbar-btn"
@@ -291,7 +290,7 @@ watch(
     <!-- 编辑区域 -->
     <div
       ref="editorRef"
-      class="richtext-body"
+      class="editor-body"
       contenteditable="true"
       @input="syncToModel"
       @keyup="syncToModel"
@@ -304,6 +303,25 @@ watch(
 </template>
 
 <style scoped>
+.editor-toolbar {
+  background: rgba(255,255,255,0.4);
+  border-color: rgba(255,255,255,0.6);
+}
+.editor-heading-select {
+  color: #6b6b6b;
+  background: transparent;
+  border: 1px solid transparent;
+}
+.editor-heading-select:hover {
+  border-color: #eaeaea;
+}
+.editor-heading-select:focus {
+  border-color: #4a90d9;
+}
+.editor-divider {
+  background: #eaeaea;
+}
+
 .toolbar-btn {
   display: inline-flex;
   align-items: center;
@@ -328,7 +346,7 @@ watch(
   color: #fff;
 }
 
-.richtext-body {
+.editor-body {
   min-height: 360px;
   max-height: 600px;
   overflow-y: auto;
@@ -339,22 +357,22 @@ watch(
   outline: none;
   background: #fff;
 }
-.richtext-body:empty::before {
+.editor-body:empty::before {
   content: '开始写作...';
   color: #bbb;
   pointer-events: none;
 }
-.richtext-body :deep(h2) { font-size: 22px; font-weight: 700; margin: 20px 0 10px; }
-.richtext-body :deep(h3) { font-size: 18px; font-weight: 600; margin: 16px 0 8px; }
-.richtext-body :deep(p) { margin-bottom: 12px; }
-.richtext-body :deep(blockquote) {
+.editor-body :deep(h2) { font-size: 22px; font-weight: 700; margin: 20px 0 10px; }
+.editor-body :deep(h3) { font-size: 18px; font-weight: 600; margin: 16px 0 8px; }
+.editor-body :deep(p) { margin-bottom: 12px; }
+.editor-body :deep(blockquote) {
   border-left: 3px solid #4a90d9;
   padding: 8px 16px;
   margin: 12px 0;
   color: #6b6b6b;
   background: #f0f4f8;
 }
-.richtext-body :deep(pre) {
+.editor-body :deep(pre) {
   background: #1e1e2e;
   color: #cdd6f4;
   border-radius: 6px;
@@ -366,11 +384,11 @@ watch(
   white-space: pre-wrap;
   word-break: break-all;
 }
-.richtext-body :deep(ul),
-.richtext-body :deep(ol) { padding-left: 24px; margin: 8px 0 12px; }
-.richtext-body :deep(li) { margin-bottom: 4px; }
-.richtext-body :deep(a) { color: #4a90d9; text-decoration: underline; }
-.richtext-body :deep(img) {
+.editor-body :deep(ul),
+.editor-body :deep(ol) { padding-left: 24px; margin: 8px 0 12px; }
+.editor-body :deep(li) { margin-bottom: 4px; }
+.editor-body :deep(a) { color: #4a90d9; text-decoration: underline; }
+.editor-body :deep(img) {
   max-width: 100%;
   height: auto;
   border-radius: 6px;
@@ -381,12 +399,76 @@ watch(
   display: block;
   margin: 12px 0;
 }
-.richtext-body :deep(img:hover) {
+.editor-body :deep(img:hover) {
   outline-color: #4a90d9;
   outline-width: 2px;
 }
-.richtext-body :deep(img.selected) {
+.editor-body :deep(img.selected) {
   outline-color: #4a90d9;
   outline-width: 3px;
+}
+
+/* 暗黑模式：编辑器改为 VitePress 深色风格 */
+[data-theme='dark'] .editor-toolbar {
+  background: #161618;
+  border-color: rgba(82, 82, 89, 0.5);
+}
+
+[data-theme='dark'] .editor-heading-select {
+  color: rgba(235, 235, 235, 0.6);
+  background: #252529;
+  border-color: rgba(82, 82, 89, 0.5);
+}
+
+[data-theme='dark'] .editor-heading-select:hover,
+[data-theme='dark'] .editor-heading-select:focus {
+  border-color: #42b983;
+}
+
+[data-theme='dark'] .editor-divider {
+  background: rgba(82, 82, 89, 0.5);
+}
+
+[data-theme='dark'] .toolbar-btn {
+  color: rgba(235, 235, 235, 0.6);
+}
+
+[data-theme='dark'] .toolbar-btn:hover {
+  background: rgba(82, 82, 89, 0.4);
+  color: rgba(255, 255, 255, 0.87);
+}
+
+[data-theme='dark'] .toolbar-btn.active {
+  background: #42b983;
+  color: #1a1a1a;
+}
+
+[data-theme='dark'] .editor-body {
+  background: #1b1b1f;
+  color: rgba(255, 255, 255, 0.87);
+}
+
+[data-theme='dark'] .editor-body:empty::before {
+  color: rgba(235, 235, 235, 0.38);
+}
+
+[data-theme='dark'] .editor-body :deep(h2),
+[data-theme='dark'] .editor-body :deep(h3) {
+  color: rgba(255, 255, 255, 0.87);
+}
+
+[data-theme='dark'] .editor-body :deep(blockquote) {
+  color: rgba(235, 235, 235, 0.6);
+  background: rgba(82, 82, 89, 0.16);
+  border-left-color: #42b983;
+}
+
+[data-theme='dark'] .editor-body :deep(a) {
+  color: #5c9eea;
+}
+
+[data-theme='dark'] .editor-body :deep(img:hover),
+[data-theme='dark'] .editor-body :deep(img.selected) {
+  outline-color: #42b983;
 }
 </style>

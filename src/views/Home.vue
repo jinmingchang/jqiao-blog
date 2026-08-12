@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { loadArticles, getCategories } from '../utils/storage'
+import { loadArticles, loadCategories } from '../utils/storage'
 import ArticleCard from '../components/ArticleCard.vue'
 
 const router = useRouter()
@@ -18,8 +18,8 @@ async function refreshData() {
   try {
     const data = await loadArticles()
     articles.value = data
-    const cats = await getCategories()
-    categories.value = cats
+    const cats = await loadCategories()
+    categories.value = cats.map((c) => c.name)
   } catch (e) {
     console.error('加载文章失败:', e)
   } finally {
